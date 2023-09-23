@@ -5,19 +5,22 @@ import os
 
 def Uploads(config, localFilePaths, remoteDirectory, newFolderName):
     remoteUrls = []
-    OpenConnection(config)
-    CreateProductFolder(remoteDirectory, newFolderName)
     for localFilePath in localFilePaths:
         url = Upload(config, localFilePath, remoteDirectory, newFolderName)
         if url != "":
             remoteUrls.append(url)
-    CloseConnection()
     return remoteUrls
     pass
 
+def Upload(config, localFilePath, remoteDirectory, newFolderName):
+    if localFilePath is None or localFilePath == "":
+        print("WARNING: Skipping empty file")
+        return ""
 
-def OpenConnection(config):
-    global ssh, sftp
+    print(f"Uploading file {localFilePath}")
+    if os.path.isfile(localFilePath) == False:
+        print(f"Error: File '{localFilePath}' does not exist")
+        return ""
 
     # Create an SSH client
     ssh = paramiko.SSHClient()
@@ -29,10 +32,6 @@ def OpenConnection(config):
 
     # Create an SFTP session
     sftp = ssh.open_sftp()
-    pass
-
-def CreateProductFolder(remoteDirectory, newFolderName):
-    global sftp
 
     # Change the current directory to the remote directory
     sftp.chdir(remoteDirectory)
@@ -45,25 +44,6 @@ def CreateProductFolder(remoteDirectory, newFolderName):
 
     # Change the current directory to the new folder
     sftp.chdir(newFolderName)
-    pass
-
-def CloseConnection():
-    global ssh, sftp
-    # Close the SFTP session and SSH connection
-    sftp.close()
-    ssh.close()
-    pass
-    
-
-def Upload(config, localFilePath, remoteDirectory, newFolderName):
-    if localFilePath is None or localFilePath == "":
-        print("WARNING: Skipping empty file")
-        return ""
-
-    print(f"Uploading file {localFilePath}")
-    if os.path.isfile(localFilePath) == False:
-        print(f"Error: File '{localFilePath}' does not exist")
-        return ""
 
     # Upload the local file to the new folder
     localFolder, localFile = os.path.split(localFilePath)
@@ -72,6 +52,10 @@ def Upload(config, localFilePath, remoteDirectory, newFolderName):
     # Print a success message
     uploadUrl = GenerateUrl(config.get('store', 'store_base_url'), remoteDirectory, newFolderName, localFile)
     print(f"File '{localFile}' uploaded to {uploadUrl}")
+
+    # Close the SFTP session and SSH connection
+    sftp.close()
+    ssh.close()
 
     return uploadUrl
     pass
