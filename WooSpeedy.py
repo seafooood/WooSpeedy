@@ -26,7 +26,7 @@ def BulkUploadProducts(config, productFile):
     pass
 
 def AskQuestion(queston, defaultAnswer):
-    answer = input(f"Enter the address of the product CSV file [{defaultAnswer}]:")
+    answer = input(f"{question} [{defaultAnswer}]:")
     if answer == "":
         answer = defaultAnswer
     return answer
@@ -40,7 +40,7 @@ if __name__ == "__main__":
     config.read('config.ini')
 
     # Ask User Questions
-    productFile = AskQuestion("Enter the address of the product CSV file", f"{config.get('product', 'product_file')}")
+    productFile = AskQuestion("Enter the address of the product CSV file", config.get('product', 'product_file'))
 
     # Start Upload
     BulkUploadProducts(config, productFile)
