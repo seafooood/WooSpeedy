@@ -26,7 +26,7 @@ def BulkUploadProducts(config, productFile):
     pass
 
 def AskQuestion(queston, defaultAnswer):
-    answer = input(f"{question} [{defaultAnswer}]:")
+    answer = input(f"{queston} [{defaultAnswer}]:")
     if answer == "":
         answer = defaultAnswer
     return answer
